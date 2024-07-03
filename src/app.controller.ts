@@ -12,6 +12,7 @@ import {
 import { AppService } from './app.service';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserDTO } from './dto/create-user.dto';
 
 @Controller({
   path: 'api',
@@ -65,11 +66,24 @@ export class AppController {
 
   @Get('/config')
   getConfig(@Req() req: Request, @Res() res: Response): Response<any> {
-    return res.status(200).send({
+    return res.status(201).send({
       data: {
         appName: this.configService.get<string>('APPLICATION_NAME'),
         port: Number(this.configService.get<number>('APPLICATION_PORT')),
       },
+    });
+  }
+
+  @Post('/register')
+  registerUser(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() userData: CreateUserDTO,
+  ): Response<any> {
+    const result = this.appService.saveNewUser(userData);
+    return res.status(200).send({
+      data: result,
+      message: 'User Berhasil Ditambahkan',
     });
   }
 }
